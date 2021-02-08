@@ -1,4 +1,4 @@
-package main
+package blockchain
 
 import (
 	"bytes"
@@ -17,8 +17,7 @@ func NewCryptoBlockChain() *CryptoBlockChain {
 	return cbc
 }
 
-func (cbc *CryptoBlockChain) startGenesisBlock() *CryptoBlock{
-	//precedingHash := [32]byte{0}
+func (cbc *CryptoBlockChain) startGenesisBlock() *CryptoBlock {
 	genesisBlock := NewCryptoBlock(0, "01/01/2021", []byte("Genesis Block"))
 	return genesisBlock
 }
@@ -27,21 +26,20 @@ func (cbc *CryptoBlockChain) obtainLatestBlock() *CryptoBlock {
 	return cbc.blockchain[len(cbc.blockchain) - 1]
 }
 
-func (cbc *CryptoBlockChain) addNewBlock(newBlock *CryptoBlock) {
+func (cbc *CryptoBlockChain) AddNewBlock(newBlock *CryptoBlock) {
 	newBlock.precedingHash = cbc.obtainLatestBlock().hash
-	//newBlock.hash = newBlock.computeHash()
 	cbc.proofOfWork(newBlock, cbc.difficulty)
 	cbc.blockchain = append(cbc.blockchain, newBlock)
 }
 
-func (cbc *CryptoBlockChain) printBlockChain() {
+func (cbc *CryptoBlockChain) PrintBlockChain() {
 	fmt.Println(len(cbc.blockchain))
 	for i, v := range cbc.blockchain {
 		fmt.Println("Index: ", i, " Value:", v.hash, " Data:", string(v.data))
 	}
 }
 
-func (cbc *CryptoBlockChain) checkChainValidity() (bool, error){
+func (cbc *CryptoBlockChain) CheckChainValidity() (bool, error){
 	for i := 0; i < len(cbc.blockchain); i++ {
 		currentBlock := cbc.blockchain[i]
 		//precedingBlock := cbc.blockchain[i-1]
@@ -59,12 +57,14 @@ func (cbc *CryptoBlockChain) checkChainValidity() (bool, error){
 }
 
 func (cbc *CryptoBlockChain) proofOfWork(newBlock *CryptoBlock, difficulty int) {
+
 	var a []byte
 
 	for i:= 0; i < difficulty; i++ {
 		a = append(a, 0)
 	}
-	//fmt.Println("COMPUTING HASH: currentHash", newBlock.hash[0:difficulty], " targetHash: ", a, " nonce: ", newBlock.nonce)
+	fmt.Println("start mining ...")
+	fmt.Println("COMPUTING HASH: currentHash", newBlock.hash[0:difficulty], " targetHash: ", a, " nonce: ", newBlock.nonce)
 	for bytes.Compare(newBlock.hash[0:difficulty], a) != 0 {
 		fmt.Println("COMPUTING HASH: currentHash", newBlock.hash[0:difficulty], " targetHash: ", a, " nonce: ", newBlock.nonce)
 		newBlock.nonce++
